@@ -1,20 +1,26 @@
-const axios = require("axios");
-const cheerio = require("cheerio");
-const pretty = require("pretty");
+import axios from 'axios';
+import cheerio from 'cheerio';
+import readline from 'readline'
 
-const url3 = "https://www.allrecipes.com/recipe/219988/cajun-crab-cakes-no-breadcrumbs/"
-const url2 = "https://www.allrecipes.com/recipe/236609/honey-garlic-slow-cooker-chicken-thighs/";
-const url1 = "https://www.allrecipes.com/recipe/260540/chef-johns-sourdough-bread/"
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+})
 
-async function scrapeData()  {
+rl.question("Please enter a valid URL from AllRecipies.com: ", (url) => {
+  scrapeData(url);
+  rl.close();
+});
+
+async function scrapeData(url) {
   try {
-    const { data } = await axios.get(url2);
+    console.log("Getting Data...")
+    const { data } = await axios.get(url);
 
     const $ = cheerio.load(data);
 
     const ingredients = $(".ingredients-section__fieldset ul li");
     const instructions = $(".instructions-section__fieldset ul li");
-    //console.log("Instruction section: ", instructions)
 
     const recipe = {
       ingredients: [],
@@ -22,14 +28,12 @@ async function scrapeData()  {
     };
 
     ingredients.each((index, element) => {
-      ingredient = $(element).find('.ingredients-item-name').text();
-      //console.log("Ingredient", ingredient)
+      let ingredient = $(element).find('span.ingredients-item-name').text();
       recipe.ingredients.push(ingredient);
     });
 
     instructions.each((index, element) => {
-      instruction = $(element).find('.paragraph').text();
-      //console.log("Instruction", instruction)
+      let instruction = $(element).find('.paragraph').text();
       recipe.instructions.push(instruction);
     });
     console.log("Recipe: ", recipe)
@@ -37,5 +41,3 @@ async function scrapeData()  {
     console.log(error)
   }
 }
-
-scrapeData();
