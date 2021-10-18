@@ -1,5 +1,6 @@
 import axios from 'axios';
 import cheerio from 'cheerio';
+import { title } from 'process';
 import readline from 'readline'
 
 const rl = readline.createInterface({
@@ -19,10 +20,14 @@ async function scrapeData(url) {
 
     const $ = cheerio.load(data);
 
+    const title = $("h1.headline").text();
+    const author = $("span.authorName").text();
     const ingredients = $(".ingredients-section__fieldset ul li");
     const instructions = $(".instructions-section__fieldset ul li");
 
     const recipe = {
+      title: title,
+      author: author,
       ingredients: [],
       instructions: []
     };
