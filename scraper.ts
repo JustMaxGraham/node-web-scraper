@@ -2,29 +2,36 @@ import axios from 'axios';
 import cheerio from 'cheerio';
 import readline from 'readline';
 
+interface Recipe {
+  title: string,
+  author: string,
+  ingredients: string[],
+  instructions: string[]
+}
+
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout
 })
 
-rl.question("Please enter a valid URL from AllRecipies.com: ", (url) => {
+rl.question("Please enter a valid URL from AllRecipies.com: ", (url: string) => {
   scrapeData(url);
   rl.close();
 });
 
-async function scrapeData(url) {
+async function scrapeData(url: string) {
   try {
     console.log("Getting Data...")
-    const { data } = await axios.get(url);
+    const { data } : any = await axios.get(url);
 
     const $ = cheerio.load(data);
 
-    const title = $("h1.headline").text();
-    const author = $("span.authorName").text();
+    const title: string = $("h1.headline").text();
+    const author: string = $("span.authorName").text();
     const ingredients = $(".ingredients-section__fieldset ul li");
     const instructions = $(".instructions-section__fieldset ul li");
 
-    const recipe = {
+    const recipe: Recipe = {
       title: title,
       author: author,
       ingredients: [],
